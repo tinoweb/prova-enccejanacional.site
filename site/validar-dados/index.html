@@ -75,8 +75,8 @@ button#submit-button:not([disabled]):hover {
     const fakeName1 = "MARCELO HENRIQUE SILVA SOUZA";
     const fakeName2 = "LUCAS PEREIRA MENDES";
     
-    const fakeDate1 = "1998-03-25";
-    const fakeDate2 = "2002-08-17";
+    const fakeDate1 = "25/03/1998";
+    const fakeDate2 = "17/08/2002";
     
     let currentStep = 1;
     let nomeSelecionado = null;
@@ -92,6 +92,11 @@ button#submit-button:not([disabled]):hover {
             
         userData = JSON.parse(cpfDataString);
         console.log("Dados carregados:", userData);
+        
+        // Ensure we're accessing data from the new API structure
+        if (userData.result) {
+            userData = userData.result;
+        }
 
         showValidationStep(1);
         fillNameOptions();
@@ -173,17 +178,26 @@ button#submit-button:not([disabled]):hover {
     }
         
     function formatDate(dateString) {
-        if (!dateString) return "";
-        if (dateString.includes('T')) {
-            dateString = dateString.split('T')[0];
-        }
-            
-        const parts = dateString.split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
-        }
+    if (!dateString) return "";
+    
+    // Check if the date is already in DD/MM/YYYY format
+    if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
         return dateString;
     }
+    
+    // Handle ISO format with T
+    if (dateString.includes('T')) {
+        dateString = dateString.split('T')[0];
+    }
+        
+    // Convert from YYYY-MM-DD to DD/MM/YYYY
+    const parts = dateString.split('-');
+    if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    
+    return dateString;
+}
         
     function selectNameOption(element, name) {
         const options = document.querySelectorAll('#name-options .option-container');

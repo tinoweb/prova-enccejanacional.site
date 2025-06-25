@@ -58,15 +58,28 @@
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const userData = JSON.parse(localStorage.getItem('cpfData') || '{}');
+        let userData = JSON.parse(localStorage.getItem('cpfData') || '{}');
+        
+        // Verificar se os dados estão na nova estrutura da API (dentro de result)
+        if (userData.result) {
+            userData = userData.result;
+        }
 
-        if (!userData.cpf) {
+        // Verificar se temos os dados necessários
+        if (!userData || !userData.nome) {
             window.location.href = '../inscricao/index.html';
             return;
         }
-
-        document.getElementById('cpf-display').textContent = userData.cpf;
-        document.getElementById('nome-display').textContent = userData.nome;
+        
+        // Exibir o CPF e nome do usuário
+        const cpfElement = document.getElementById('cpf-display');
+        const nomeElement = document.getElementById('nome-display');
+        
+        if (userData.cpf) {
+            cpfElement.textContent = userData.cpf;
+        }
+        
+        nomeElement.textContent = userData.nome;
             
         const cepInput = document.getElementById('cep');
         let typingTimer;
